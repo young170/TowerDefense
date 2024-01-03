@@ -36,7 +36,7 @@ public class Plot : MonoBehaviour
         // later open menu: upgrade, sell, etc.
         if (towerObj != null)
         {
-            turret.OpenUpgradeUI();
+            turret.OpenMenuUI();
             
             return;
         }

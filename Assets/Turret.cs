@@ -12,8 +12,9 @@ public class Turret : MonoBehaviour
     [SerializeField] private LayerMask enemyMask; // turrets' target layer
     [SerializeField] private GameObject bulletPrefab; // the bullet shot out
     [SerializeField] private Transform firingPoint; // tip of the barrel
-    [SerializeField] private GameObject upgradeUI;
+    [SerializeField] private GameObject menuUI;
     [SerializeField] private Button upgradeButton;
+    [SerializeField] private Button sellButton;
 
     [Header("Attribute")]
     [SerializeField] private float targetingRange = 5f;
@@ -36,6 +37,7 @@ public class Turret : MonoBehaviour
         targetingRangeBase = targetingRange;
 
         upgradeButton.onClick.AddListener(Upgrade); // run the upgrade function
+        sellButton.onClick.AddListener(Sell); // run the sell function
     }
 
     // Update is called once per frame
@@ -96,14 +98,14 @@ public class Turret : MonoBehaviour
         bulletScript.SetDebuffRate(debuffRate);
     }
 
-    public void OpenUpgradeUI()
+    public void OpenMenuUI()
     {
-        upgradeUI.SetActive(true);
+        menuUI.SetActive(true);
     }
 
-    public void CloseUpgradeUI()
+    public void CloseMenuUI()
     {
-        upgradeUI.SetActive(false);
+        menuUI.SetActive(false);
         UIManager.main.SetHoveringState(false); // undo hovering state
     }
 
@@ -118,22 +120,34 @@ public class Turret : MonoBehaviour
         bps = CalculateBps();
         targetingRange = CalculateRange();
 
-        CloseUpgradeUI(); // close the UI window
+        CloseMenuUI(); // close the UI window
     }
 
     private int CalculateCost()
     {
-        return Mathf.RoundToInt(baseUpgradeCost * Mathf.Pow(level, 0.8f)); // factor of upgrade cost per level
+        return Mathf.RoundToInt(baseUpgradeCost * 1.2f); // factor of upgrade cost per level
     }
 
     private float CalculateBps()
     {
-        return bpsBase * Mathf.Pow(level, 0.6f);
+        return bpsBase * 1.1f;
     }
 
     private float CalculateRange()
     {
-        return bpsBase * Mathf.Pow(level, 0.4f);
+        return targetingRangeBase * 1.05f;
+    }
+
+    public void Sell()
+    {
+        CloseMenuUI(); // close the UI window
+        Destroy(gameObject); // remove turret
+        LevelManager.main.IncreaseCurrency(CalculateSellCost());
+    }
+
+    private int CalculateSellCost()
+    {
+        return Mathf.RoundToInt(baseUpgradeCost * 0.75f); // factor of sell cost per level
     }
 
     private void OnDrawGizmosSelected()
