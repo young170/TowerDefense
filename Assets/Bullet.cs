@@ -28,7 +28,11 @@ public class Bullet : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!target) return;
+        if (!target)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         Vector2 direction = (target.position - transform.position).normalized; // between 0 and 1
 

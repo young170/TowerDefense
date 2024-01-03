@@ -9,7 +9,8 @@ public class Plot : MonoBehaviour
     [SerializeField] private SpriteRenderer sr;
     [SerializeField] private Color hoverColor;
 
-    private GameObject tower; // default empty
+    public GameObject towerObj; // default empty
+    public Turret turret;
     private Color startColor;
 
     // Start is called before the first frame update
@@ -30,20 +31,24 @@ public class Plot : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (UIManager.main.IsHoveringUI()) return; // over UI not plot
+
         // later open menu: upgrade, sell, etc.
-        if (tower != null) return; // tower already exists
-
-        Tower towerToBuild = BuildManager.main.GetSelectedTower(); // return the tower
-
-        if (towerToBuild.cost > LevelManager.main.currency) // not enough money
+        if (towerObj != null)
         {
-            Debug.Log("Can't afford this tower");
+            turret.OpenUpgradeUI();
+            
             return;
         }
 
-        LevelManager.main.SpendCurrency(towerToBuild.cost); // spend money on selected tower to build
+        Tower towerToBuild = BuildManager.main.GetSelectedTower(); // return the towerObj
 
-        tower = Instantiate(towerToBuild.prefab, transform.position, Quaternion.identity);
+        if (towerToBuild.cost > LevelManager.main.currency) return; // can't afford
+
+        LevelManager.main.SpendCurrency(towerToBuild.cost); // spend money on selected towerObj to build
+
+        towerObj = Instantiate(towerToBuild.prefab, transform.position, Quaternion.identity);
+        turret = towerObj.GetComponent<Turret>();
     }
 
     // Update is called once per frame
